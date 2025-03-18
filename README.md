@@ -31,6 +31,8 @@ You can start editing the page by modifying [`app/page.tsx`](app/page.tsx). The 
     - [`RightPanel.tsx`](app/components/RightPanel.tsx): Component for the right panel with client information.
     - [`Controls.tsx`](app/components/Controls.tsx): Component for the control panel with filters and navigation.
     - [`TeamScheduler.tsx`](app/components/TeamScheduler.tsx): Main component for the team scheduler view.
+  - `context/`: Context providers for state management.
+    - [`CalendarContext.tsx`](app/context/CalendarContext.tsx): Context and provider for calendar state management.
   - `utils/`: Utility functions.
     - [`dateUtils.ts`](app/utils/dateUtils.ts): Utility functions for date and time manipulation.
   - [`globals.css`](app/globals.css): Global CSS styles.
@@ -44,6 +46,49 @@ You can start editing the page by modifying [`app/page.tsx`](app/page.tsx). The 
 - `tsconfig.json`: TypeScript configuration file.
 - `postcss.config.mjs`: PostCSS configuration file.
 - `.gitignore`: Git ignore file.
+
+## Calendar Context
+
+The `CalendarContext` provides state management for the calendar view. It includes the following:
+
+- `viewMode`: The current view mode ("Day", "Week", or "Month").
+- `setViewMode`: Function to set the view mode.
+- `currentDate`: The current date being viewed.
+- `setCurrentDate`: Function to set the current date.
+- `visibleRange`: The visible date range based on the current date and view mode.
+- `goToPrevious`: Function to navigate to the previous date range.
+- `goToNext`: Function to navigate to the next date range.
+- `goToToday`: Function to navigate to the current date.
+
+### Usage
+
+To use the `CalendarContext`, wrap your components with the `CalendarProvider`:
+
+```tsx
+import { CalendarProvider } from './context/CalendarContext';
+
+function MyApp({ Component, pageProps }) {
+  return (
+    <CalendarProvider>
+      <Component {...pageProps} />
+    </CalendarProvider>
+  );
+}
+
+export default MyApp;
+```
+
+Then, use the `useCalendar` hook to access the context values:
+
+```tsx
+import { useCalendar } from './context/CalendarContext';
+
+const MyComponent = () => {
+  const { viewMode, setViewMode, currentDate, setCurrentDate, visibleRange, goToPrevious, goToNext, goToToday } = useCalendar();
+
+  // Use the context values in your component
+};
+```
 
 ## Learn More
 
