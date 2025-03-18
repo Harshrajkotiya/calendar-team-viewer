@@ -3,36 +3,20 @@ import { format } from 'date-fns';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { colorMap, hours, initialAppointments, teamMembers } from '../common/data';
-import { getPositionFromTime, getWidthFromDuration, isAppointmentVisible } from '../utils/dateUtils';
+import { getGridSlots, getPositionFromTime, getWidthFromDuration, isAppointmentVisible } from '../utils/dateUtils';
 import Controls from './Controls';
 import RightPanel from './RightPanel';
 import Tabs from './Tabs';
+import { useCalendar } from '../context/CalendarContext';
 
 export default function TeamScheduler() {
     // State management
+    const { currentDate, setCurrentDate, viewMode, visibleRange } = useCalendar();
     const [currentView, setCurrentView] = useState('Team View');
-    const [currentDate, setCurrentDate] = useState(new Date());
     const [teamFilter, setTeamFilter] = useState<string | number>('All');
     const [timeIncrement, setTimeIncrement] = useState('1 hour');
-    const [viewMode, setViewMode] = useState('Day');
     const [appointments, setAppointments] = useState(initialAppointments);
-
-    // Calendar navigation functions
-    const goToPreviousDay = () => {
-        const newDate = new Date(currentDate);
-        newDate.setDate(currentDate.getDate() - 1);
-        setCurrentDate(newDate);
-    };
-
-    const goToNextDay = () => {
-        const newDate = new Date(currentDate);
-        newDate.setDate(currentDate.getDate() + 1);
-        setCurrentDate(newDate);
-    };
-
-    const goToToday = () => {
-        setCurrentDate(new Date());
-    };
+    const slots = getGridSlots(viewMode, visibleRange);
 
     // Format dates
     const formatMonth = (date: Date) => {
@@ -91,11 +75,6 @@ export default function TeamScheduler() {
                                 setTeamFilter={setTeamFilter}
                                 timeIncrement={timeIncrement}
                                 setTimeIncrement={setTimeIncrement}
-                                viewMode={viewMode}
-                                setViewMode={setViewMode}
-                                goToPreviousDay={goToPreviousDay}
-                                goToToday={goToToday}
-                                goToNextDay={goToNextDay}
                             />
 
                             <div className="overflow-auto no-scrollbar">
@@ -105,7 +84,7 @@ export default function TeamScheduler() {
                                         <thead>
                                             <tr>
                                                 <th className="border border-t-0 border-gray-300 p-1 md:p-2 bg-white sticky z-20 text-left">Team</th>
-                                                {hours.map((time, index) => (
+                                                {slots.map((time, index) => (
                                                     <th key={index} className="border-r-2 border-b border-gray-300 bg-gray-100 p-1 md:p-2 text-center text-xs text-gray-600">
                                                         {time instanceof Date ? format(time, 'h:mm a') : 'Invalid Date'}
                                                     </th>
@@ -127,11 +106,10 @@ export default function TeamScheduler() {
                                                     </td>
 
                                                     {/* Time slots for each member */}
-                                                    {hours.map((slot, slotIndex) => {
+                                                    {slots.map((slot, slotIndex) => {
                                                         const slotStart = new Date(slot);
                                                         const slotEnd = new Date(slot);
-                                                        slotEnd.setMinutes(slotEnd.getMinutes() + 60); // One-hour slot
-
+                                                        slotEnd.setHours(slotEnd.getHours() + 60);
                                                         return (
                                                             <td key={slotIndex} className="w-16 md:w-24 border-r-2 border-b-2 border-gray-300 p-0 relative h-12">
                                                                 <div className="flex h-full">
@@ -141,13 +119,9 @@ export default function TeamScheduler() {
 
                                                                 {appointments
                                                                     .filter(app => {
-                                                                        const appointmentStart = new Date(app.startTime);
-                                                                        const appointmentEnd = new Date(app.endTime);
-                                                                        return (
-                                                                            isAppointmentVisible(appointmentStart, appointmentEnd, slotStart, slotEnd) &&
-                                                                            app.memberId === member.id &&
+                                                                        const isVisible = isAppointmentVisible(new Date(app.startTime), new Date(app.endTime), slotStart, slotEnd)
+                                                                        return isVisible && app.memberId === member.id &&
                                                                             new Date(app.timeSlot).toDateString() === currentDate.toDateString()
-                                                                        );
                                                                     })
                                                                     .map(appointment => {
                                                                         const appointmentStart = new Date(appointment.startTime);
@@ -160,7 +134,7 @@ export default function TeamScheduler() {
                                                                         return (
                                                                             <div
                                                                                 key={appointment.id}
-                                                                                className={`absolute top-0 border-l-4 rounded-md p-1 text-xs ${colorMap[member.color] || "bg-gray-400 border-gray-300"}`}
+                                                                                className={`absolute top-0 border-l-2 rounded-md p-1 text-xs ${colorMap[member.color] || "bg-gray-400 border-gray-300"}`}
                                                                                 style={{
                                                                                     left: `${leftOffset}%`,
                                                                                     width: `${width}%`,

@@ -19,12 +19,34 @@ export const generateTimeSlots = (startHour: number, endHour: number): Date[] =>
     date.setHours(startHour, 0, 0, 0);
 
     while (date.getHours() < endHour) {
-      slots.push(new Date(date));
-      date.setMinutes(date.getMinutes() + 60);
+        slots.push(new Date(date));
+        date.setMinutes(date.getMinutes() + 60);
     }
 
     return slots;
-  };
+};
+
+export const getGridSlots = (viewMode: "Day" | "Week" | "Month", visibleRange: { start: Date; end: Date }) => {
+    if (viewMode === "Day") {
+        return generateTimeSlots(6, 15); // Hours from 6 AM to 10 PM
+    } else if (viewMode === "Week") {
+        const days = [];
+        let current = new Date(visibleRange.start);
+        while (current <= visibleRange.end) {
+            days.push(new Date(current)); // Add a new Date object to avoid reference issues
+            current.setDate(current.getDate() + 1);
+        }
+        return days;
+    } else { // Month View
+        const days = [];
+        let current = new Date(visibleRange.start);
+        while (current <= visibleRange.end) {
+            days.push(new Date(current));
+            current.setDate(current.getDate() + 1);
+        }
+        return days;
+    }
+};
 
 export const getTimeRangeLabel = (start: Date, end: Date): string => {
     const startTime = format(start, 'h:mm a');
@@ -91,21 +113,22 @@ export const formatDateHeader = (date: Date): string => {
     return format(date, 'MMMM yyyy');
 };
 
-// Custom function to check if an appointment is visible in the current view
 export const isAppointmentVisible = (
     appointmentStart: Date,
     appointmentEnd: Date,
-    viewStart: Date,
-    viewEnd: Date
+    slotStart: Date,
+    slotEnd: Date
 ): boolean => {
-    // Check if appointment starts during the view
-    const startsDuringView = appointmentStart >= viewStart && appointmentStart < viewEnd;
+    // Normalize slot to start and end of the hour to avoid precision issues
+    const normSlotStart = new Date(slotStart);
+    normSlotStart.setSeconds(0, 0);
 
-    // Check if appointment ends during the view
-    const endsDuringView = appointmentEnd > viewStart && appointmentEnd <= viewEnd;
+    const normSlotEnd = new Date(slotEnd);
+    normSlotEnd.setSeconds(59, 999); // End of minute to avoid missing overlaps
 
-    // Check if appointment spans the entire view
-    const spansEntireView = appointmentStart <= viewStart && appointmentEnd >= viewEnd;
-
-    return startsDuringView || endsDuringView || spansEntireView;
+    return (
+        (appointmentStart >= normSlotStart && appointmentStart < normSlotEnd) || // Starts inside slot
+        (appointmentEnd > normSlotStart && appointmentEnd <= normSlotEnd) || // Ends inside slot
+        (appointmentStart < normSlotStart && appointmentEnd > normSlotEnd) // Spans across the slot
+    );
 };
