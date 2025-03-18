@@ -44,11 +44,9 @@ const Controls: React.FC<ControlsProps> = ({
     const [showStatusDropdown, setShowStatusDropdown] = useState<boolean>(false);
 
     return (
-        <div className="flex flex-col md:flex-row items-start md:items-center p-4 border-b justify-between gap-4">
-
+        <div className="flex flex-col md:flex-row items-start md:items-center p-4 border-b border-gray-300 justify-between gap-4">
           {/* Left Section: Status & Team Dropdowns */}
           <div className='flex flex-wrap items-center gap-4'>
-
             {/* Status Dropdown */}
             <div className="relative">
               <button
@@ -118,7 +116,6 @@ const Controls: React.FC<ControlsProps> = ({
 
           {/* Right Section: Time Increment, View Mode, Navigation Buttons */}
           <div className='flex flex-wrap items-center gap-4 justify-between md:justify-end w-full md:w-auto'>
-
             {/* Time Increment Dropdown */}
             <div className="relative">
               <button

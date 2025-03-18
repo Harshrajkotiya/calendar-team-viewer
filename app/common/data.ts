@@ -1,17 +1,10 @@
 // data.ts
 import { TeamMember, Appointment, Client } from "@/app/common/type";
+import { generateTimeSlots } from "../utils/dateUtils";
 
-export const hours: string[] = [
-  "6am",
-  "7am",
-  "8am",
-  "9am",
-  "10am",
-  "11am",
-  "12pm",
-  "1pm",
-  "2pm",
-];
+// Generate time slots from 6am to 2pm as shown in the UI
+export const hours: Date[] = generateTimeSlots(6, 15);
+
 export const minuteIncrements: string[] = ["00", "15", "30", "45"];
 
 export const timeOptions: string[] = [];
@@ -25,75 +18,86 @@ export const timeOptions: string[] = [];
 );
 
 export const teamMembers: TeamMember[] = [
-  { id: 1, name: "Member 1", color: "bg-orange-400" },
-  { id: 2, name: "Mem ber 2", color: "bg-green-400" },
-  { id: 3, name: "Member 3", color: "bg-teal-400" },
-  { id: 4, name: "Member 4", color: "bg-blue-300" },
-  { id: 5, name: "Member 5", color: "bg-blue-400" },
-  { id: 6, name: "Member 6", color: "bg-green-300" },
-  { id: 7, name: "Member 7", color: "bg-pink-400" },
-  { id: 8, name: "Member 8", color: "bg-yellow-300" },
-  { id: 9, name: "Member 9", color: "bg-red-300" },
-  { id: 10, name: "Member 10", color: "bg-purple-400" },
-  { id: 11, name: "Member 11", color: "bg-yellow-400" },
+  { id: 1, name: "Member 1", color: "orange" },
+  { id: 2, name: "Member 2", color: "green" },
+  { id: 3, name: "Member 3", color: "teal" },
+  { id: 4, name: "Member 4", color: "blue" },
+  { id: 5, name: "Member 5", color: "blue" },
+  { id: 6, name: "Member 6", color: "green" },
+  { id: 7, name: "Member 7", color: "pink" },
+  { id: 8, name: "Member 8", color: "yellow" },
+  { id: 9, name: "Member 9", color: "red" },
+  { id: 10, name: "Member 10", color: "purple" },
+  { id: 11, name: "Member 11", color: "yellow" },
 ];
+
+export const colorMap: { [key: string]: string } = {
+  orange: "bg-orange-100 border-orange-200",
+  green: "bg-green-100 border-green-200",
+  teal: "bg-teal-100 border-teal-200",
+  blue: "bg-blue-100 border-blue-200",
+  pink: "bg-pink-100 border-pink-200",
+  yellow: "bg-yellow-100 border-yellow-200",
+  red: "bg-red-100 border-red-200",
+  purple: "bg-purple-100 border-purple-200",
+  gray: "bg-gray-400 border-gray-200",
+};
+
+const today = new Date();
+const baseDate = new Date(today);
+baseDate.setHours(0, 0, 0, 0);
 
 export const initialAppointments: Appointment[] = [
   {
     id: 1,
     memberId: 1,
     clientName: "Client Name",
-    startTime: "10:30 am",
-    endTime: "10:45 am",
-    column: 2,
-    date: new Date(),
+    startTime: new Date(baseDate.setHours(10, 30)),
+    endTime: new Date(baseDate.setHours(10, 45)),
+    timeSlot: new Date(baseDate.setHours(10, 30)),
   },
   {
     id: 2,
     memberId: 1,
     clientName: "Client Name",
-    startTime: "8:00 am",
-    endTime: "8:30 am",
-    column: 4,
-    date: new Date(),
+    startTime: new Date(baseDate.setHours(8, 0)),
+    endTime: new Date(baseDate.setHours(8, 30)),
+    timeSlot: new Date(baseDate.setHours(8, 0)),
   },
   {
     id: 3,
     memberId: 3,
     clientName: "Client Name",
-    startTime: "9:30 am",
-    endTime: "10:00 am",
-    column: 3,
-    date: new Date(),
+    startTime: new Date(baseDate.setHours(9, 30)),
+    endTime: new Date(baseDate.setHours(10, 0)),
+    timeSlot: new Date(baseDate.setHours(9, 30)),
   },
   {
     id: 4,
     memberId: 8,
     clientName: "Client Name",
-    startTime: "11:30 am",
-    endTime: "12:00 pm",
-    column: 5,
-    date: new Date(),
+    startTime: new Date(baseDate.setHours(11, 30)),
+    endTime: new Date(baseDate.setHours(13, 30)),
+    timeSlot: new Date(baseDate.setHours(11, 30)),
   },
   {
     id: 5,
     memberId: 6,
     clientName: "Client Name",
-    startTime: "1:15 pm",
-    endTime: "2:00 pm",
-    column: 6,
-    date: new Date(),
+    startTime: new Date(baseDate.setHours(13, 15)),
+    endTime: new Date(baseDate.setHours(14, 0)),
+    timeSlot: new Date(baseDate.setHours(13, 15)),
   },
   {
     id: 6,
     memberId: 2,
     clientName: "Client Name",
-    startTime: "12:30 pm",
-    endTime: "1:00 pm",
-    column: 2,
-    date: new Date(),
+    startTime: new Date(baseDate.setHours(12, 30)),
+    endTime: new Date(baseDate.setHours(13, 0)),
+    timeSlot: new Date(baseDate.setHours(12, 30)),
   },
 ];
+
 
 export const initialClients: Client[] = [
   {

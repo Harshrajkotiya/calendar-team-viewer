@@ -3,14 +3,7 @@ import React, { useState } from 'react';
 import { initialClients } from '../common/data';
 import Tabs from './Tabs';
 
-interface RightPanelProps {
-    // setShowAddAppointment: (value: boolean) => void;
-}
-
-const RightPanel: React.FC<RightPanelProps> = ({
-    // setShowAddAppointment,
-}) => {
-
+const RightPanel = () => {
     const [assignFilter, setAssignFilter] = useState('Unassigned');
     const [clients, setClients] = useState(initialClients);
 
@@ -42,7 +35,7 @@ const RightPanel: React.FC<RightPanelProps> = ({
     return (
         <div className="flex flex-col">
             {/* Assigned / Unassigned Filter Tabs */}
-            <div className="p-3 border-b flex justify-center">
+            <div className="p-3 border-b border-gray-300 flex justify-center">
                 <Tabs
                     currentTab={assignFilter}
                     setCurrentTab={setAssignFilter}
@@ -50,7 +43,6 @@ const RightPanel: React.FC<RightPanelProps> = ({
                 />
             </div>
             <div className="m-4 p-2 text-sm font-medium transition-all rounded-lg bg-[#FAFAFA] shadow text-[#232529] flex items-center justify-center gap-2 border-1 border-[#EEEFF1]"
-            // onClick={() => setShowAddAppointment(true)}
             >
                 <span className="font-medium cursor-pointer " onClick={handleAssignAll}>
                     Assign All
@@ -62,7 +54,7 @@ const RightPanel: React.FC<RightPanelProps> = ({
 
             <div className="flex-1 overflow-auto px-4">
                 {filteredClients().map((client) => (
-                    <div key={client.id} className="border-b p-4">
+                    <div key={client.id} className="border-b border-gray-300 p-4">
                         <div className="flex justify-between items-start">
                             <div>
                                 <div className="font-medium">{client.name}</div>
